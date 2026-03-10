@@ -1,40 +1,49 @@
-import heroBg from "@/assets/hero-bg.jpg";
-
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-hero-gradient">
-      <div className="absolute inset-0 opacity-20">
-        <img src={heroBg} alt="" className="w-full h-full object-cover" />
-      </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent" />
-      <div className="relative container max-w-7xl mx-auto px-4 py-20 md:py-28">
-        <div className="max-w-2xl space-y-6 animate-fade-in">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-sm font-medium text-accent">
-            🔍 Atualizado hoje
-          </span>
-          <h1 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl text-primary-foreground leading-tight">
-            Os melhores achados da internet em um só lugar
-          </h1>
-          <p className="text-lg md:text-xl text-primary-foreground/80 max-w-lg">
-            Descubra produtos baratos, úteis e virais que podem facilitar sua vida.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="#ofertas"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-foreground font-bold hover:brightness-110 transition-all animate-pulse-glow"
-            >
-              Ver Achados de Hoje 🔥
-            </a>
-            <a
-              href="#top"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-primary-foreground/30 text-primary-foreground font-semibold hover:bg-primary-foreground/10 transition-all"
-            >
-              Top da Semana 🏆
-            </a>
+    <section className="bg-primary">
+      <div className="container max-w-7xl mx-auto px-4 py-4">
+        {/* Banner carousel area */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Main banner */}
+          <div className="lg:col-span-2 relative rounded-md overflow-hidden bg-gradient-to-br from-brand-dark to-brand-medium min-h-[280px] md:min-h-[340px] flex items-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/70 to-transparent" />
+            <div className="relative z-10 p-8 md:p-12 max-w-lg space-y-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                🔍 ATUALIZADO HOJE
+              </span>
+              <h1 className="font-display font-extrabold text-3xl md:text-4xl text-card leading-tight">
+                Os melhores achados da internet
+              </h1>
+              <p className="text-card/80 text-sm md:text-base">
+                Produtos baratos, úteis e virais. Economize até 70%!
+              </p>
+              <a
+                href="#ofertas"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-md bg-primary text-primary-foreground font-bold text-sm hover:brightness-110 transition-all"
+              >
+                Ver Achados de Hoje →
+              </a>
+            </div>
           </div>
-          <div className="flex items-center gap-6 pt-4 text-primary-foreground/60 text-sm">
-            <span>✅ +500 produtos selecionados</span>
-            <span>✅ Atualizado diariamente</span>
+
+          {/* Side banners */}
+          <div className="flex flex-col gap-4">
+            <div className="flex-1 rounded-md bg-secondary p-6 flex flex-col justify-center min-h-[160px]">
+              <span className="text-3xl mb-2">🏆</span>
+              <h3 className="font-display font-bold text-lg text-secondary-foreground">Top da Semana</h3>
+              <p className="text-secondary-foreground/70 text-sm mt-1">Os mais vendidos e recomendados</p>
+              <a href="#top" className="text-secondary-foreground font-semibold text-sm mt-3 hover:underline">
+                Ver ranking →
+              </a>
+            </div>
+            <div className="flex-1 rounded-md bg-destructive p-6 flex flex-col justify-center min-h-[160px]">
+              <span className="text-3xl mb-2">⚡</span>
+              <h3 className="font-display font-bold text-lg text-destructive-foreground">Ofertas Relâmpago</h3>
+              <p className="text-destructive-foreground/70 text-sm mt-1">Até 70% OFF por tempo limitado</p>
+              <a href="#ofertas" className="text-destructive-foreground font-semibold text-sm mt-3 hover:underline">
+                Aproveitar →
+              </a>
+            </div>
           </div>
         </div>
       </div>

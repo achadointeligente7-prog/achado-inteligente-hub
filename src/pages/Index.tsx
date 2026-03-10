@@ -19,6 +19,7 @@ const Index = () => {
       <main>
         <HeroSection />
         <StatsBar />
+        <CategoryGrid />
         <ProductSection
           id="virais"
           title="Produtos Virais da Semana"
@@ -26,7 +27,6 @@ const Index = () => {
           icon="🔥"
           products={viralProducts}
         />
-        <CategoryGrid />
         <ProductSection
           id="ofertas"
           title="Achados Baratos"
@@ -34,15 +34,13 @@ const Index = () => {
           icon="💰"
           products={cheapProducts}
         />
-        <div className="bg-muted/30">
-          <ProductSection
-            id="tecnologia"
-            title="Tecnologia Útil"
-            subtitle="Gadgets que facilitam sua vida"
-            icon="⚡"
-            products={techProducts}
-          />
-        </div>
+        <ProductSection
+          id="tecnologia"
+          title="Tecnologia Útil"
+          subtitle="Gadgets que facilitam sua vida"
+          icon="⚡"
+          products={techProducts}
+        />
         <ProductSection
           id="casa"
           title="Casa & Cozinha"
@@ -50,15 +48,13 @@ const Index = () => {
           icon="🏠"
           products={homeProducts}
         />
-        <div className="bg-muted/30">
-          <ProductSection
-            id="top"
-            title="Top 10 da Semana"
-            subtitle="Os mais vendidos e recomendados"
-            icon="🏆"
-            products={products.slice(0, 4)}
-          />
-        </div>
+        <ProductSection
+          id="top"
+          title="Top 10 da Semana"
+          subtitle="Os mais vendidos e recomendados"
+          icon="🏆"
+          products={products.slice(0, 4)}
+        />
         <NewsletterSection />
       </main>
       <Footer />

@@ -3,9 +3,9 @@ import type { Product } from "@/data/products";
 
 const tagStyles: Record<string, string> = {
   viral: "bg-destructive text-destructive-foreground",
-  oferta: "bg-accent text-accent-foreground",
+  oferta: "bg-primary text-primary-foreground",
   novo: "bg-secondary text-secondary-foreground",
-  top: "bg-primary text-primary-foreground",
+  top: "bg-foreground text-card",
 };
 
 const tagLabels: Record<string, string> = {
@@ -16,48 +16,63 @@ const tagLabels: Record<string, string> = {
 };
 
 export function ProductCard({ product }: { product: Product }) {
+  const discount = product.originalPrice
+    ? Math.round(
+        (1 -
+          parseFloat(product.price.replace(/[^\d,]/g, "").replace(",", ".")) /
+            parseFloat(product.originalPrice.replace(/[^\d,]/g, "").replace(",", "."))) *
+          100
+      )
+    : null;
+
   return (
-    <div className="group relative bg-card rounded-lg overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
-      {product.tag && (
-        <span className={`absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-xs font-semibold ${tagStyles[product.tag]}`}>
-          {tagLabels[product.tag]}
-        </span>
-      )}
-      <div className="aspect-square overflow-hidden bg-muted">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
+    <div className="group bg-card rounded-md overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+      <div className="relative">
+        {product.tag && (
+          <span className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${tagStyles[product.tag]}`}>
+            {tagLabels[product.tag]}
+          </span>
+        )}
+        {discount && (
+          <span className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-sm bg-secondary text-secondary-foreground text-[10px] font-bold">
+            {discount}% OFF
+          </span>
+        )}
+        <div className="aspect-square overflow-hidden bg-card p-4">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
       </div>
-      <div className="p-4 space-y-2">
-        <h3 className="font-display font-semibold text-foreground leading-tight line-clamp-2">
+      <div className="p-3 space-y-1.5">
+        <h3 className="text-sm text-foreground leading-snug line-clamp-2">
           {product.name}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-        <div className="flex items-center gap-1">
+        {product.originalPrice && (
+          <p className="text-xs text-muted-foreground line-through">{product.originalPrice}</p>
+        )}
+        <p className="font-display font-bold text-xl text-foreground">{product.price}</p>
+        <p className="text-[11px] text-secondary font-medium">em até 12x sem juros</p>
+        <p className="text-[11px] text-secondary">Frete grátis</p>
+        <div className="flex items-center gap-0.5 pt-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              className={`h-3.5 w-3.5 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`}
+              className={`h-3 w-3 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`}
             />
           ))}
-          <span className="text-xs text-muted-foreground ml-1">({product.reviews.toLocaleString()})</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="font-display font-bold text-lg text-secondary">{product.price}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-muted-foreground line-through">{product.originalPrice}</span>
-          )}
+          <span className="text-[10px] text-muted-foreground ml-1">({product.reviews.toLocaleString()})</span>
         </div>
         <a
           href={product.affiliateUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full text-center bg-accent text-accent-foreground font-semibold py-2.5 rounded-md hover:brightness-110 transition-all text-sm mt-2"
+          className="block w-full text-center bg-secondary text-secondary-foreground font-semibold py-2 rounded-sm hover:brightness-110 transition-all text-sm mt-2"
         >
-          Ver preço na loja →
+          Ver preço na loja
         </a>
       </div>
     </div>
