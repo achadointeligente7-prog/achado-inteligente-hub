@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
-import type { Product } from "@/data/products";
+import type { Product } from "@/hooks/useProducts";
+import { useEffect, useRef, useState } from "react";
 
 const tagStyles: Record<string, string> = {
   viral: "bg-destructive text-destructive-foreground",
@@ -16,6 +17,24 @@ const tagLabels: Record<string, string> = {
 };
 
 export function ProductCard({ product }: { product: Product }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
   const discount = product.originalPrice
     ? Math.round(
         (1 -
@@ -26,7 +45,13 @@ export function ProductCard({ product }: { product: Product }) {
     : null;
 
   return (
-    <div className="group bg-card rounded-md overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+    <div
+      ref={ref}
+      className={`group bg-card rounded-md overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+      style={{ transitionDelay: `${Math.random() * 200}ms` }}
+    >
       <div className="relative">
         {product.tag && (
           <span className={`absolute top-2 left-2 z-10 px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${tagStyles[product.tag]}`}>
@@ -70,9 +95,16 @@ export function ProductCard({ product }: { product: Product }) {
           href={product.affiliateUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full text-center bg-secondary text-secondary-foreground font-semibold py-2 rounded-sm hover:brightness-110 transition-all text-sm mt-2"
+          className={`cta-button block w-full text-center font-semibold py-2.5 rounded-sm text-sm mt-2 transition-all duration-200 ${
+            isPressed ? "scale-95" : ""
+          }`}
+          onMouseDown={() => setIsPressed(true)}
+          onMouseUp={() => setTimeout(() => setIsPressed(false), 150)}
+          onMouseLeave={() => setIsPressed(false)}
+          onTouchStart={() => setIsPressed(true)}
+          onTouchEnd={() => setTimeout(() => setIsPressed(false), 150)}
         >
-          Ver preço na loja
+          🛒 Ver preço na loja
         </a>
       </div>
     </div>

@@ -101,3 +101,44 @@
     scrollbar-width: none;
   }
 }
+
+/* CTA Button Animations */
+.cta-button {
+  background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)));
+  color: hsl(var(--secondary-foreground));
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px hsl(var(--secondary) / 0.3);
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px hsl(var(--secondary) / 0.4);
+}
+
+.cta-button:hover::before {
+  left: 100%;
+}
+
+.cta-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px hsl(var(--secondary) / 0.3);
+}
+
+@media (hover: none) {
+  .cta-button:active {
+    transform: scale(0.93);
+    background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--secondary)));
+  }
+}

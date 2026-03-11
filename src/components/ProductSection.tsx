@@ -1,4 +1,4 @@
-import type { Product } from "@/data/products";
+import type { Product } from "@/hooks/useProducts";
 import { ProductCard } from "./ProductCard";
 import { ChevronRight } from "lucide-react";
 
