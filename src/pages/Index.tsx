@@ -6,9 +6,11 @@ import { ProductSection } from "@/components/ProductSection";
 import { NewsletterSection } from "@/components/NewsletterSection";
 import { Footer } from "@/components/Footer";
 import { useProducts } from "@/hooks/useProducts";
+import { useTrackVisit } from "@/hooks/useTrackVisit";
 
 const Index = () => {
   const { products, loading } = useProducts();
+  useTrackVisit("/");
 
   const viralProducts = products.filter((p) => p.tag === "viral" || p.tag === "top");
   const cheapProducts = products.filter((p) => parseFloat(p.price.replace(/[^\d,]/g, "").replace(",", ".")) <= 50);

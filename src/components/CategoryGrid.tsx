@@ -1,6 +1,26 @@
-import { categories } from "@/data/products";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+}
 
 export function CategoryGrid() {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      });
+  }, []);
+
   return (
     <section className="py-8">
       <div className="container max-w-7xl mx-auto px-4">
