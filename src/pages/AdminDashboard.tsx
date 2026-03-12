@@ -3,36 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, LogOut, ArrowLeft, X } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
+import { LogOut, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { AdminProducts } from "@/components/admin/AdminProducts";
+import { AdminCategories } from "@/components/admin/AdminCategories";
+import { AdminPaymentMethods } from "@/components/admin/AdminPaymentMethods";
+import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
 
-type Product = Tables<"products">;
+const tabs = [
+  { id: "products", label: "Produtos" },
+  { id: "categories", label: "Categorias" },
+  { id: "payments", label: "Pagamentos" },
+  { id: "analytics", label: "Métricas" },
+] as const;
 
-const emptyProduct = {
-  name: "",
-  description: "",
-  price: "",
-  original_price: "",
-  rating: 4.5,
-  reviews: 0,
-  image_url: "",
-  category: "",
-  tag: "" as string,
-  affiliate_url: "#",
-};
+type TabId = (typeof tabs)[number]["id"];
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading, signOut } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyProduct);
-  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>("products");
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -40,76 +30,12 @@ export default function AdminDashboard() {
     }
   }, [user, isAdmin, loading, navigate]);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (data) setProducts(data);
-  };
-
-  const handleEdit = (product: Product) => {
-    setEditingId(product.id);
-    setForm({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      original_price: product.original_price || "",
-      rating: product.rating,
-      reviews: product.reviews,
-      image_url: product.image_url,
-      category: product.category,
-      tag: product.tag || "",
-      affiliate_url: product.affiliate_url,
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    await supabase.from("products").delete().eq("id", id);
-    fetchProducts();
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    const data = {
-      ...form,
-      original_price: form.original_price || null,
-      tag: form.tag || null,
-    };
-
-    if (editingId) {
-      await supabase.from("products").update(data).eq("id", editingId);
-    } else {
-      await supabase.from("products").insert(data);
-    }
-
-    setSaving(false);
-    setShowForm(false);
-    setEditingId(null);
-    setForm(emptyProduct);
-    fetchProducts();
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
-    setEditingId(null);
-    setForm(emptyProduct);
-  };
-
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando...</div>;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="bg-primary sticky top-0 z-50">
         <div className="container max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -127,157 +53,32 @@ export default function AdminDashboard() {
         </div>
       </header>
 
+      {/* Tab navigation */}
+      <div className="bg-card border-b border-border">
+        <div className="container max-w-7xl mx-auto px-4">
+          <nav className="flex gap-0 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? "border-secondary text-secondary"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
       <main className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="font-display font-bold text-2xl text-foreground">Gerenciar Produtos</h1>
-          <Button onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyProduct); }}>
-            <Plus className="h-4 w-4 mr-1" /> Novo Produto
-          </Button>
-        </div>
-
-        {/* Form modal */}
-        {showForm && (
-          <div className="fixed inset-0 bg-foreground/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-card rounded-lg shadow-card-hover w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-bold text-lg text-foreground">
-                  {editingId ? "Editar Produto" : "Novo Produto"}
-                </h2>
-                <button onClick={handleCancel} className="text-muted-foreground hover:text-foreground">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <form onSubmit={handleSave} className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Nome *</label>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground">Descrição</label>
-                  <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Preço *</label>
-                    <Input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="R$ 49,90" required />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Preço Original</label>
-                    <Input value={form.original_price} onChange={(e) => setForm({ ...form, original_price: e.target.value })} placeholder="R$ 99,90" />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground">URL da Imagem *</label>
-                  <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." required />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground">Link de Afiliado *</label>
-                  <Input value={form.affiliate_url} onChange={(e) => setForm({ ...form, affiliate_url: e.target.value })} placeholder="https://..." required />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Categoria</label>
-                    <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="tecnologia" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Tag</label>
-                    <select
-                      value={form.tag}
-                      onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      <option value="">Nenhuma</option>
-                      <option value="viral">🔥 Viral</option>
-                      <option value="oferta">⚡ Oferta</option>
-                      <option value="novo">✨ Novo</option>
-                      <option value="top">🏆 Top</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Avaliação</label>
-                    <Input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: parseFloat(e.target.value) || 0 })} />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-foreground">Nº Reviews</label>
-                    <Input type="number" min="0" value={form.reviews} onChange={(e) => setForm({ ...form, reviews: parseInt(e.target.value) || 0 })} />
-                  </div>
-                </div>
-                <div className="flex gap-3 pt-2">
-                  <Button type="submit" className="flex-1" disabled={saving}>
-                    {saving ? "Salvando..." : editingId ? "Salvar Alterações" : "Adicionar Produto"}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={handleCancel}>Cancelar</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Products table */}
-        <div className="bg-card rounded-lg shadow-card overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Produto</TableHead>
-                <TableHead>Preço</TableHead>
-                <TableHead className="hidden md:table-cell">Categoria</TableHead>
-                <TableHead className="hidden md:table-cell">Tag</TableHead>
-                <TableHead className="hidden lg:table-cell">Link Afiliado</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                    Nenhum produto cadastrado. Clique em "Novo Produto" para começar.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        {product.image_url && (
-                          <img src={product.image_url} alt={product.name} className="h-10 w-10 rounded object-cover bg-muted" />
-                        )}
-                        <div>
-                          <p className="font-medium text-foreground text-sm line-clamp-1">{product.name}</p>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{product.description}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <p className="font-semibold text-foreground">{product.price}</p>
-                      {product.original_price && (
-                        <p className="text-xs text-muted-foreground line-through">{product.original_price}</p>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-sm text-muted-foreground">{product.category}</TableCell>
-                    <TableCell className="hidden md:table-cell text-sm">{product.tag || "—"}</TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      <a href={product.affiliate_url} target="_blank" rel="noopener" className="text-xs text-secondary hover:underline truncate max-w-[150px] block">
-                        {product.affiliate_url}
-                      </a>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(product)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)} className="text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {activeTab === "products" && <AdminProducts />}
+        {activeTab === "categories" && <AdminCategories />}
+        {activeTab === "payments" && <AdminPaymentMethods />}
+        {activeTab === "analytics" && <AdminAnalytics />}
       </main>
     </div>
   );
