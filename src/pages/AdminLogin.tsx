@@ -9,20 +9,35 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
-    if (error) {
-      setError("Email ou senha incorretos.");
+
+    if (isSignUp) {
+      const { error } = await signUp(email, password);
+      setLoading(false);
+      if (error) {
+        setError("Erro ao criar conta. Tente novamente.");
+      } else {
+        setSuccess("Conta criada! Agora faça login.");
+        setIsSignUp(false);
+      }
     } else {
-      navigate("/admin");
+      const { error } = await signIn(email, password);
+      setLoading(false);
+      if (error) {
+        setError("Email ou senha incorretos.");
+      } else {
+        navigate("/admin");
+      }
     }
   };
 
@@ -32,7 +47,9 @@ export default function AdminLogin() {
         <div className="flex flex-col items-center gap-3">
           <img src={logo} alt="Achado Inteligente" className="h-12" />
           <h1 className="font-display font-bold text-xl text-foreground">Painel Administrativo</h1>
-          <p className="text-sm text-muted-foreground">Faça login para gerenciar o site</p>
+          <p className="text-sm text-muted-foreground">
+            {isSignUp ? "Crie sua conta" : "Faça login para gerenciar o site"}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -57,12 +74,20 @@ export default function AdminLogin() {
             />
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
+          {success && <p className="text-sm text-green-600">{success}</p>}
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
+            {loading ? "Aguarde..." : isSignUp ? "Criar conta" : "Entrar"}
           </Button>
         </form>
 
-        <a href="/" className="block text-center text-sm text-secondary hover:underline">
+        <button
+          onClick={() => { setIsSignUp(!isSignUp); setError(""); setSuccess(""); }}
+          className="block w-full text-center text-sm text-secondary hover:underline"
+        >
+          {isSignUp ? "Já tem conta? Faça login" : "Criar uma conta"}
+        </button>
+
+        <a href="/" className="block text-center text-sm text-muted-foreground hover:underline">
           ← Voltar ao site
         </a>
       </div>
