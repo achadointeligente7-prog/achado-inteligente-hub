@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import type { Product } from "@/hooks/useProducts";
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const tagStyles: Record<string, string> = {
   viral: "bg-destructive text-destructive-foreground",
@@ -44,6 +45,18 @@ export function ProductCard({ product }: { product: Product }) {
       )
     : null;
 
+  const handleClick = () => {
+    // Track the click
+    supabase
+      .from("product_clicks")
+      .insert({
+        product_id: product.id,
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || null,
+      })
+      .then(() => {});
+  };
+
   return (
     <div
       ref={ref}
@@ -81,7 +94,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
         <p className="font-display font-bold text-xl text-foreground">{product.price}</p>
         <p className="text-[11px] text-secondary font-medium">em até 12x sem juros</p>
-        <p className="text-[11px] text-secondary">Frete grátis</p>
+        <p className="text-[11px] text-muted-foreground">💳 Pague na loja oficial</p>
         <div className="flex items-center gap-0.5 pt-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
@@ -95,6 +108,7 @@ export function ProductCard({ product }: { product: Product }) {
           href={product.affiliateUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleClick}
           className={`cta-button block w-full text-center font-semibold py-2.5 rounded-sm text-sm mt-2 transition-all duration-200 ${
             isPressed ? "scale-95" : ""
           }`}

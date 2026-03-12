@@ -1,9 +1,27 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 export function StatsBar() {
+  const [paymentMethods, setPaymentMethods] = useState<{ name: string; icon: string }[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("payment_methods")
+      .select("name, icon")
+      .eq("enabled", true)
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data) setPaymentMethods(data);
+      });
+  }, []);
+
   const stats = [
-    { icon: "📦", label: "Frete grátis", sub: "em milhares de produtos" },
     { icon: "🔒", label: "Compra segura", sub: "links verificados" },
     { icon: "⭐", label: "+500 produtos", sub: "selecionados com curadoria" },
     { icon: "🔄", label: "Atualizado 24h", sub: "ofertas renovadas diariamente" },
+    ...(paymentMethods.length > 0
+      ? [{ icon: "💳", label: "Pagamento na loja", sub: paymentMethods.map((p) => p.name).join(", ") }]
+      : []),
   ];
 
   return (

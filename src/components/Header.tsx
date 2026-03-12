@@ -1,7 +1,14 @@
-import { useState } from "react";
-import { Menu, X, Search, MapPin, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, Search, ChevronDown } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { categories } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+}
 
 const navLinks = [
   { label: "Ofertas do dia", href: "#ofertas" },
@@ -11,25 +18,32 @@ const navLinks = [
   { label: "Casa", href: "#casa" },
   { label: "Cozinha", href: "#cozinha" },
   { label: "Tecnologia", href: "#tecnologia" },
-  { label: "Blog", href: "#blog" },
-  { label: "Contato", href: "#contato" },
 ];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order")
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      });
+  }, []);
 
   return (
     <header className="sticky top-0 z-50">
       {/* Top yellow bar */}
       <div className="bg-primary">
         <div className="container max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-4">
-          {/* Logo */}
           <a href="/" className="flex items-center gap-2 shrink-0">
             <img src={logo} alt="Achado Inteligente" className="h-10" />
           </a>
 
-          {/* Search bar - ML style */}
           <div className="flex-1 hidden md:block">
             <div className="relative">
               <input
@@ -43,11 +57,7 @@ export function Header() {
             </div>
           </div>
 
-          {/* Right side icons */}
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
-            <a href="#" className="hover:underline flex items-center gap-1">
-              <MapPin className="h-4 w-4" /> Enviar para
-            </a>
             <a href="#" className="hover:underline">Instagram</a>
             <a href="#" className="hover:underline">TikTok</a>
             <a href="#" className="hover:underline">Telegram</a>
