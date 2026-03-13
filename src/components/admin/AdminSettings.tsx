@@ -61,7 +61,7 @@ export function AdminSettings() {
     setSaving(true);
     await supabase
       .from("site_settings")
-      .update({ value: config as unknown as Record<string, unknown>, updated_at: new Date().toISOString() })
+      .update({ value: JSON.parse(JSON.stringify(config)), updated_at: new Date().toISOString() })
       .eq("key", "popup_config");
     setSaving(false);
     setSaved(true);
