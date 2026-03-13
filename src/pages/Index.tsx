@@ -5,12 +5,19 @@ import { CategoryGrid } from "@/components/CategoryGrid";
 import { ProductSection } from "@/components/ProductSection";
 import { NewsletterSection } from "@/components/NewsletterSection";
 import { Footer } from "@/components/Footer";
+import { LeadCapturePopup } from "@/components/LeadCapturePopup";
 import { useProducts } from "@/hooks/useProducts";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+import { useEffect } from "react";
 
 const Index = () => {
   const { products, loading } = useProducts();
   useTrackVisit("/");
+
+  // Fix: restore scroll position on mount (fixes mobile back-nav freeze)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const viralProducts = products.filter((p) => p.tag === "viral" || p.tag === "top");
   const cheapProducts = products.filter((p) => parseFloat(p.price.replace(/[^\d,]/g, "").replace(",", ".")) <= 50);
@@ -68,6 +75,7 @@ const Index = () => {
         <NewsletterSection />
       </main>
       <Footer />
+      <LeadCapturePopup />
     </div>
   );
 };
