@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LogOut, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.png";
@@ -9,12 +8,14 @@ import { AdminProducts } from "@/components/admin/AdminProducts";
 import { AdminCategories } from "@/components/admin/AdminCategories";
 import { AdminPaymentMethods } from "@/components/admin/AdminPaymentMethods";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
+import { AdminSettings } from "@/components/admin/AdminSettings";
 
 const tabs = [
   { id: "products", label: "Produtos" },
   { id: "categories", label: "Categorias" },
   { id: "payments", label: "Pagamentos" },
   { id: "analytics", label: "Métricas" },
+  { id: "settings", label: "Configurações" },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -53,7 +54,6 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Tab navigation */}
       <div className="bg-card border-b border-border">
         <div className="container max-w-7xl mx-auto px-4">
           <nav className="flex gap-0 overflow-x-auto scrollbar-hide">
@@ -79,6 +79,7 @@ export default function AdminDashboard() {
         {activeTab === "categories" && <AdminCategories />}
         {activeTab === "payments" && <AdminPaymentMethods />}
         {activeTab === "analytics" && <AdminAnalytics />}
+        {activeTab === "settings" && <AdminSettings />}
       </main>
     </div>
   );
