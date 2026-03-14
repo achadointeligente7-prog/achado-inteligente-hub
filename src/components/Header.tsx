@@ -119,7 +119,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-card border-b border-border">
+        <div className="md:hidden bg-card border-b border-border max-h-[70vh] overflow-y-auto">
           <div className="p-4 space-y-1">
             <div className="relative mb-3">
               <input
