@@ -9,6 +9,27 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
 
+function CategorySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [categories, setCategories] = useState<{ slug: string; name: string; icon: string }[]>([]);
+  useEffect(() => {
+    supabase.from("categories").select("slug,name,icon").order("sort_order").then(({ data }) => {
+      if (data) setCategories(data);
+    });
+  }, []);
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+    >
+      <option value="">Selecione uma categoria</option>
+      {categories.map((c) => (
+        <option key={c.slug} value={c.slug}>{c.icon} {c.name}</option>
+      ))}
+    </select>
+  );
+}
+
 const emptyProduct = {
   name: "",
   description: "",
