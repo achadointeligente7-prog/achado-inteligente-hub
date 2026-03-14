@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { Pencil, Trash2, Plus, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
@@ -27,6 +27,7 @@ export function AdminProducts() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProduct);
+  const [extraImages, setExtraImages] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ export function AdminProducts() {
     if (data) setProducts(data);
   };
 
-  const handleEdit = (product: Product) => {
+  const handleEdit = async (product: Product) => {
     setEditingId(product.id);
     setForm({
       name: product.name,
@@ -55,11 +56,20 @@ export function AdminProducts() {
       tag: product.tag || "",
       affiliate_url: product.affiliate_url,
     });
+
+    // Load existing extra images
+    const { data: imgs } = await supabase
+      .from("product_images")
+      .select("image_url")
+      .eq("product_id", product.id)
+      .order("sort_order", { ascending: true });
+    setExtraImages(imgs?.map((i) => i.image_url) || []);
     setShowForm(true);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    await supabase.from("product_images").delete().eq("product_id", id);
     await supabase.from("products").delete().eq("id", id);
     fetchProducts();
   };
@@ -73,16 +83,35 @@ export function AdminProducts() {
       tag: form.tag || null,
     };
 
+    let productId = editingId;
+
     if (editingId) {
       await supabase.from("products").update(data).eq("id", editingId);
     } else {
-      await supabase.from("products").insert(data);
+      const { data: inserted } = await supabase.from("products").insert(data).select("id").single();
+      productId = inserted?.id || null;
+    }
+
+    // Save extra images
+    if (productId) {
+      await supabase.from("product_images").delete().eq("product_id", productId);
+      const validImages = extraImages.filter((url) => url.trim() !== "");
+      if (validImages.length > 0) {
+        await supabase.from("product_images").insert(
+          validImages.map((url, i) => ({
+            product_id: productId!,
+            image_url: url.trim(),
+            sort_order: i,
+          }))
+        );
+      }
     }
 
     setSaving(false);
     setShowForm(false);
     setEditingId(null);
     setForm(emptyProduct);
+    setExtraImages([]);
     fetchProducts();
   };
 
@@ -90,13 +119,14 @@ export function AdminProducts() {
     setShowForm(false);
     setEditingId(null);
     setForm(emptyProduct);
+    setExtraImages([]);
   };
 
   return (
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display font-bold text-2xl text-foreground">Gerenciar Produtos</h1>
-        <Button onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyProduct); }}>
+        <Button onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyProduct); setExtraImages([]); }}>
           <Plus className="h-4 w-4 mr-1" /> Novo Produto
         </Button>
       </div>
@@ -132,9 +162,51 @@ export function AdminProducts() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">URL da Imagem *</label>
+                <label className="text-sm font-medium text-foreground">URL da Imagem Principal *</label>
                 <Input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." required />
               </div>
+
+              {/* Extra images section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-foreground">Imagens Adicionais</label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setExtraImages([...extraImages, ""])}
+                  >
+                    <ImagePlus className="h-3.5 w-3.5 mr-1" /> Adicionar
+                  </Button>
+                </div>
+                {extraImages.map((url, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={url}
+                      onChange={(e) => {
+                        const updated = [...extraImages];
+                        updated[index] = e.target.value;
+                        setExtraImages(updated);
+                      }}
+                      placeholder={`URL da imagem ${index + 2}`}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setExtraImages(extraImages.filter((_, i) => i !== index))}
+                      className="text-destructive hover:text-destructive shrink-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {extraImages.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Nenhuma imagem adicional. Clique em "Adicionar" para inserir mais imagens na galeria.</p>
+                )}
+              </div>
+
               <div>
                 <label className="text-sm font-medium text-foreground">Link de Afiliado *</label>
                 <Input value={form.affiliate_url} onChange={(e) => setForm({ ...form, affiliate_url: e.target.value })} placeholder="https://..." required />
