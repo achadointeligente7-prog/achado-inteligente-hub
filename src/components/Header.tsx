@@ -142,15 +142,15 @@ export function Header() {
             <div className="border-t border-border pt-2 mt-2">
               <p className="text-xs text-muted-foreground px-3 mb-2 font-semibold uppercase">Categorias</p>
               {categories.map((cat) => (
-                <a
+                <Link
                   key={cat.slug}
-                  href={`#${cat.slug}`}
+                  to={`/categoria/${cat.slug}`}
                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span>{cat.icon}</span>
                   <span>{cat.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

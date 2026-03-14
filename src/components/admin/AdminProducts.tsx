@@ -212,9 +212,9 @@ export function AdminProducts() {
                 <Input value={form.affiliate_url} onChange={(e) => setForm({ ...form, affiliate_url: e.target.value })} placeholder="https://..." required />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Categoria</label>
-                  <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="tecnologia" />
+              <div>
+                  <label className="text-sm font-medium text-foreground">Categoria (grupo)</label>
+                  <CategorySelect value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground">Tag</label>
