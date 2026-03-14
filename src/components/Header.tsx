@@ -102,15 +102,15 @@ export function Header() {
           <div className="container max-w-7xl mx-auto px-4 py-4">
             <div className="grid grid-cols-4 gap-2">
               {categories.map((cat) => (
-                <a
+                <Link
                   key={cat.slug}
-                  href={`#${cat.slug}`}
+                  to={`/categoria/${cat.slug}`}
                   className="flex items-center gap-2.5 p-3 rounded-md hover:bg-muted transition-all"
                   onClick={() => setIsCategoryOpen(false)}
                 >
                   <span className="text-xl">{cat.icon}</span>
                   <span className="text-sm font-medium text-foreground">{cat.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
