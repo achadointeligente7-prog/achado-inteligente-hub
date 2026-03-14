@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -101,15 +102,15 @@ export function Header() {
           <div className="container max-w-7xl mx-auto px-4 py-4">
             <div className="grid grid-cols-4 gap-2">
               {categories.map((cat) => (
-                <a
+                <Link
                   key={cat.slug}
-                  href={`#${cat.slug}`}
+                  to={`/categoria/${cat.slug}`}
                   className="flex items-center gap-2.5 p-3 rounded-md hover:bg-muted transition-all"
                   onClick={() => setIsCategoryOpen(false)}
                 >
                   <span className="text-xl">{cat.icon}</span>
                   <span className="text-sm font-medium text-foreground">{cat.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -141,15 +142,15 @@ export function Header() {
             <div className="border-t border-border pt-2 mt-2">
               <p className="text-xs text-muted-foreground px-3 mb-2 font-semibold uppercase">Categorias</p>
               {categories.map((cat) => (
-                <a
+                <Link
                   key={cat.slug}
-                  href={`#${cat.slug}`}
+                  to={`/categoria/${cat.slug}`}
                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <span>{cat.icon}</span>
                   <span>{cat.name}</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

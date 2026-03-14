@@ -9,6 +9,27 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
 
+function CategorySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [categories, setCategories] = useState<{ slug: string; name: string; icon: string }[]>([]);
+  useEffect(() => {
+    supabase.from("categories").select("slug,name,icon").order("sort_order").then(({ data }) => {
+      if (data) setCategories(data);
+    });
+  }, []);
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+    >
+      <option value="">Selecione uma categoria</option>
+      {categories.map((c) => (
+        <option key={c.slug} value={c.slug}>{c.icon} {c.name}</option>
+      ))}
+    </select>
+  );
+}
+
 const emptyProduct = {
   name: "",
   description: "",
@@ -212,9 +233,9 @@ export function AdminProducts() {
                 <Input value={form.affiliate_url} onChange={(e) => setForm({ ...form, affiliate_url: e.target.value })} placeholder="https://..." required />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-foreground">Categoria</label>
-                  <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="tecnologia" />
+              <div>
+                  <label className="text-sm font-medium text-foreground">Categoria (grupo)</label>
+                  <CategorySelect value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground">Tag</label>
