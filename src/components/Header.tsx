@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
 
