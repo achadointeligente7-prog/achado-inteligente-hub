@@ -11,6 +11,13 @@ interface Category {
   icon: string;
 }
 
+interface SocialLinks {
+  instagram: string;
+  tiktok: string;
+  telegram: string;
+  youtube: string;
+}
+
 const navLinks = [
   { label: "Ofertas do dia", href: "#ofertas" },
   { label: "Produtos Virais", href: "#virais" },
@@ -25,6 +32,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", tiktok: "", telegram: "", youtube: "" });
 
   useEffect(() => {
     supabase
@@ -33,6 +41,14 @@ export function Header() {
       .order("sort_order")
       .then(({ data }) => {
         if (data) setCategories(data);
+      });
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "social_links")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setSocialLinks(data.value as unknown as SocialLinks);
       });
   }, []);
 
@@ -59,9 +75,9 @@ export function Header() {
           </div>
 
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
-            <a href="#" className="hover:underline">Instagram</a>
-            <a href="#" className="hover:underline">TikTok</a>
-            <a href="#" className="hover:underline">Telegram</a>
+            <a href={socialLinks.instagram || "#"} target={socialLinks.instagram ? "_blank" : undefined} rel={socialLinks.instagram ? "noopener noreferrer" : undefined} className="hover:underline">Instagram</a>
+            <a href={socialLinks.tiktok || "#"} target={socialLinks.tiktok ? "_blank" : undefined} rel={socialLinks.tiktok ? "noopener noreferrer" : undefined} className="hover:underline">TikTok</a>
+            <a href={socialLinks.telegram || "#"} target={socialLinks.telegram ? "_blank" : undefined} rel={socialLinks.telegram ? "noopener noreferrer" : undefined} className="hover:underline">Telegram</a>
           </div>
 
           <button
