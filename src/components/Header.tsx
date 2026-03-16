@@ -32,6 +32,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", tiktok: "", telegram: "", youtube: "" });
 
   useEffect(() => {
     supabase
@@ -40,6 +41,14 @@ export function Header() {
       .order("sort_order")
       .then(({ data }) => {
         if (data) setCategories(data);
+      });
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "social_links")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setSocialLinks(data.value as unknown as SocialLinks);
       });
   }, []);
 
