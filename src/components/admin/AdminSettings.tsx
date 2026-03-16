@@ -89,6 +89,30 @@ export function AdminSettings() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const handleSaveSocial = async () => {
+    setSavingSocial(true);
+    // upsert social_links setting
+    const { data: existing } = await supabase
+      .from("site_settings")
+      .select("id")
+      .eq("key", "social_links")
+      .single();
+
+    if (existing) {
+      await supabase
+        .from("site_settings")
+        .update({ value: JSON.parse(JSON.stringify(socialLinks)), updated_at: new Date().toISOString() })
+        .eq("key", "social_links");
+    } else {
+      await supabase
+        .from("site_settings")
+        .insert({ key: "social_links", value: JSON.parse(JSON.stringify(socialLinks)) });
+    }
+    setSavingSocial(false);
+    setSavedSocial(true);
+    setTimeout(() => setSavedSocial(false), 2000);
+  };
+
   return (
     <>
       <h1 className="font-display font-bold text-2xl text-foreground mb-6">Configurações do Pop-up</h1>
