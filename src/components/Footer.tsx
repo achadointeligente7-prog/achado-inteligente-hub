@@ -1,6 +1,42 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
+interface SocialLinks {
+  instagram: string;
+  tiktok: string;
+  telegram: string;
+  youtube: string;
+}
+
+const socialDefaults: SocialLinks = {
+  instagram: "",
+  tiktok: "",
+  telegram: "",
+  youtube: "",
+};
+
+const socialLabels: { key: keyof SocialLinks; label: string }[] = [
+  { key: "instagram", label: "Instagram" },
+  { key: "tiktok", label: "TikTok" },
+  { key: "youtube", label: "YouTube" },
+  { key: "telegram", label: "Telegram" },
+];
+
 export function Footer() {
+  const [links, setLinks] = useState<SocialLinks>(socialDefaults);
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "social_links")
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setLinks(data.value as unknown as SocialLinks);
+      });
+  }, []);
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container max-w-7xl mx-auto px-4 py-10">
@@ -13,13 +49,15 @@ export function Footer() {
               Descobrimos os melhores produtos da internet para você.
             </p>
             <div className="flex gap-3">
-              {["Instagram", "TikTok", "YouTube", "Telegram"].map((social) => (
+              {socialLabels.map(({ key, label }) => (
                 <a
-                  key={social}
-                  href="#"
+                  key={key}
+                  href={links[key] || "#"}
+                  target={links[key] ? "_blank" : undefined}
+                  rel={links[key] ? "noopener noreferrer" : undefined}
                   className="px-3 py-1.5 text-xs rounded-sm bg-muted text-muted-foreground hover:bg-border transition-colors"
                 >
-                  {social}
+                  {label}
                 </a>
               ))}
             </div>
@@ -44,8 +82,15 @@ export function Footer() {
             <h4 className="font-display font-semibold text-sm text-foreground mb-3">Contato</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>📧 contato@achadointeligente.com</li>
-              <li>📱 Siga no Instagram</li>
-              <li>🎬 Siga no TikTok</li>
+              {links.instagram && (
+                <li><a href={links.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">📱 Siga no Instagram</a></li>
+              )}
+              {links.tiktok && (
+                <li><a href={links.tiktok} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">🎬 Siga no TikTok</a></li>
+              )}
+              {links.telegram && (
+                <li><a href={links.telegram} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">✈️ Entre no Telegram</a></li>
+              )}
             </ul>
           </div>
         </div>
