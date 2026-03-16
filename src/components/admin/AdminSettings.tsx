@@ -16,6 +16,20 @@ interface PopupConfig {
   show_whatsapp_button: boolean;
 }
 
+interface SocialLinks {
+  instagram: string;
+  tiktok: string;
+  telegram: string;
+  youtube: string;
+}
+
+const defaultSocialLinks: SocialLinks = {
+  instagram: "",
+  tiktok: "",
+  telegram: "",
+  youtube: "",
+};
+
 interface Subscriber {
   id: string;
   email: string;
@@ -34,18 +48,25 @@ const defaultConfig: PopupConfig = {
 
 export function AdminSettings() {
   const [config, setConfig] = useState<PopupConfig>(defaultConfig);
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>(defaultSocialLinks);
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [savingSocial, setSavingSocial] = useState(false);
+  const [savedSocial, setSavedSocial] = useState(false);
 
   useEffect(() => {
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "popup_config")
-      .single()
+      .select("key, value")
+      .in("key", ["popup_config", "social_links"])
       .then(({ data }) => {
-        if (data?.value) setConfig(data.value as unknown as PopupConfig);
+        if (data) {
+          const popup = data.find((d) => d.key === "popup_config");
+          if (popup?.value) setConfig(popup.value as unknown as PopupConfig);
+          const social = data.find((d) => d.key === "social_links");
+          if (social?.value) setSocialLinks(social.value as unknown as SocialLinks);
+        }
       });
 
     supabase
@@ -66,6 +87,30 @@ export function AdminSettings() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleSaveSocial = async () => {
+    setSavingSocial(true);
+    // upsert social_links setting
+    const { data: existing } = await supabase
+      .from("site_settings")
+      .select("id")
+      .eq("key", "social_links")
+      .single();
+
+    if (existing) {
+      await supabase
+        .from("site_settings")
+        .update({ value: JSON.parse(JSON.stringify(socialLinks)), updated_at: new Date().toISOString() })
+        .eq("key", "social_links");
+    } else {
+      await supabase
+        .from("site_settings")
+        .insert({ key: "social_links", value: JSON.parse(JSON.stringify(socialLinks)) });
+    }
+    setSavingSocial(false);
+    setSavedSocial(true);
+    setTimeout(() => setSavedSocial(false), 2000);
   };
 
   return (
@@ -120,6 +165,46 @@ export function AdminSettings() {
 
         <Button onClick={handleSave} disabled={saving} className="w-full">
           {saving ? "Salvando..." : saved ? "✅ Salvo!" : "Salvar Configurações"}
+        </Button>
+      </div>
+
+      {/* Social Links */}
+      <h2 className="font-display font-bold text-xl text-foreground mb-4">🔗 Redes Sociais</h2>
+      <div className="bg-card rounded-lg shadow-card p-6 space-y-5 mb-8">
+        <div>
+          <Label className="text-sm font-medium">Instagram</Label>
+          <Input
+            value={socialLinks.instagram}
+            onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
+            placeholder="https://instagram.com/..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">TikTok</Label>
+          <Input
+            value={socialLinks.tiktok}
+            onChange={(e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value })}
+            placeholder="https://tiktok.com/@..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Telegram</Label>
+          <Input
+            value={socialLinks.telegram}
+            onChange={(e) => setSocialLinks({ ...socialLinks, telegram: e.target.value })}
+            placeholder="https://t.me/..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">YouTube</Label>
+          <Input
+            value={socialLinks.youtube}
+            onChange={(e) => setSocialLinks({ ...socialLinks, youtube: e.target.value })}
+            placeholder="https://youtube.com/@..."
+          />
+        </div>
+        <Button onClick={handleSaveSocial} disabled={savingSocial} className="w-full">
+          {savingSocial ? "Salvando..." : savedSocial ? "✅ Salvo!" : "Salvar Redes Sociais"}
         </Button>
       </div>
 
