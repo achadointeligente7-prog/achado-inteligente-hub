@@ -11,6 +11,13 @@ interface Category {
   icon: string;
 }
 
+interface SocialLinks {
+  instagram: string;
+  tiktok: string;
+  telegram: string;
+  youtube: string;
+}
+
 const navLinks = [
   { label: "Ofertas do dia", href: "#ofertas" },
   { label: "Produtos Virais", href: "#virais" },
