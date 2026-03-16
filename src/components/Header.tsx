@@ -75,9 +75,9 @@ export function Header() {
           </div>
 
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
-            <a href="#" className="hover:underline">Instagram</a>
-            <a href="#" className="hover:underline">TikTok</a>
-            <a href="#" className="hover:underline">Telegram</a>
+            <a href={socialLinks.instagram || "#"} target={socialLinks.instagram ? "_blank" : undefined} rel={socialLinks.instagram ? "noopener noreferrer" : undefined} className="hover:underline">Instagram</a>
+            <a href={socialLinks.tiktok || "#"} target={socialLinks.tiktok ? "_blank" : undefined} rel={socialLinks.tiktok ? "noopener noreferrer" : undefined} className="hover:underline">TikTok</a>
+            <a href={socialLinks.telegram || "#"} target={socialLinks.telegram ? "_blank" : undefined} rel={socialLinks.telegram ? "noopener noreferrer" : undefined} className="hover:underline">Telegram</a>
           </div>
 
           <button
