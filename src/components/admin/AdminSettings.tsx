@@ -168,6 +168,46 @@ export function AdminSettings() {
         </Button>
       </div>
 
+      {/* Social Links */}
+      <h2 className="font-display font-bold text-xl text-foreground mb-4">🔗 Redes Sociais</h2>
+      <div className="bg-card rounded-lg shadow-card p-6 space-y-5 mb-8">
+        <div>
+          <Label className="text-sm font-medium">Instagram</Label>
+          <Input
+            value={socialLinks.instagram}
+            onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
+            placeholder="https://instagram.com/..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">TikTok</Label>
+          <Input
+            value={socialLinks.tiktok}
+            onChange={(e) => setSocialLinks({ ...socialLinks, tiktok: e.target.value })}
+            placeholder="https://tiktok.com/@..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Telegram</Label>
+          <Input
+            value={socialLinks.telegram}
+            onChange={(e) => setSocialLinks({ ...socialLinks, telegram: e.target.value })}
+            placeholder="https://t.me/..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">YouTube</Label>
+          <Input
+            value={socialLinks.youtube}
+            onChange={(e) => setSocialLinks({ ...socialLinks, youtube: e.target.value })}
+            placeholder="https://youtube.com/@..."
+          />
+        </div>
+        <Button onClick={handleSaveSocial} disabled={savingSocial} className="w-full">
+          {savingSocial ? "Salvando..." : savedSocial ? "✅ Salvo!" : "Salvar Redes Sociais"}
+        </Button>
+      </div>
+
       {/* Subscribers list */}
       <h2 className="font-display font-bold text-xl text-foreground mb-4">
         📧 E-mails Cadastrados ({subscribers.length})
