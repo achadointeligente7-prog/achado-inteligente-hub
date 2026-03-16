@@ -16,6 +16,20 @@ interface PopupConfig {
   show_whatsapp_button: boolean;
 }
 
+interface SocialLinks {
+  instagram: string;
+  tiktok: string;
+  telegram: string;
+  youtube: string;
+}
+
+const defaultSocialLinks: SocialLinks = {
+  instagram: "",
+  tiktok: "",
+  telegram: "",
+  youtube: "",
+};
+
 interface Subscriber {
   id: string;
   email: string;
