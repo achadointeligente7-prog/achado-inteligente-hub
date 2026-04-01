@@ -7,6 +7,7 @@ interface SocialLinks {
   tiktok: string;
   telegram: string;
   youtube: string;
+  whatsapp_channel: string;
 }
 
 const socialDefaults: SocialLinks = {
@@ -14,6 +15,7 @@ const socialDefaults: SocialLinks = {
   tiktok: "",
   telegram: "",
   youtube: "",
+  whatsapp_channel: "",
 };
 
 const socialLabels: { key: keyof SocialLinks; label: string }[] = [
