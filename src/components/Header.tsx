@@ -16,6 +16,7 @@ interface SocialLinks {
   tiktok: string;
   telegram: string;
   youtube: string;
+  whatsapp_channel: string;
 }
 
 const navLinks = [
