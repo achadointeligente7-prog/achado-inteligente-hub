@@ -21,6 +21,7 @@ interface SocialLinks {
   tiktok: string;
   telegram: string;
   youtube: string;
+  whatsapp_channel: string;
 }
 
 const defaultSocialLinks: SocialLinks = {
@@ -28,6 +29,7 @@ const defaultSocialLinks: SocialLinks = {
   tiktok: "",
   telegram: "",
   youtube: "",
+  whatsapp_channel: "",
 };
 
 interface Subscriber {

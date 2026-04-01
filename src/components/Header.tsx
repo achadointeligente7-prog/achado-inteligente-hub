@@ -61,18 +61,7 @@ export function Header() {
             <img src={logo} alt="Achado Inteligente" className="h-10" />
           </a>
 
-          <div className="flex-1 hidden md:block">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Buscar produtos, marcas e muito mais..."
-                className="w-full pl-4 pr-12 py-2.5 rounded-sm bg-card text-foreground text-sm focus:outline-none shadow-hero"
-              />
-              <button className="absolute right-0 top-0 h-full px-4 bg-muted hover:bg-border transition-colors rounded-r-sm">
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </div>
-          </div>
+          <div className="flex-1 hidden md:block" />
 
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
             <a href={socialLinks.instagram || "#"} target={socialLinks.instagram ? "_blank" : undefined} rel={socialLinks.instagram ? "noopener noreferrer" : undefined} className="hover:underline">Instagram</a>
