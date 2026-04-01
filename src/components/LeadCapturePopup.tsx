@@ -115,33 +115,33 @@ export function LeadCapturePopup() {
           )}
 
           {submitted && (
-            <div className="bg-secondary/10 rounded-md p-4 mt-4">
-              <p className="text-sm font-medium text-secondary">✅ E-mail cadastrado com sucesso!</p>
+            <div className="space-y-3 mt-4">
+              <div className="bg-secondary/10 rounded-md p-4">
+                <p className="text-sm font-medium text-secondary">✅ E-mail cadastrado com sucesso!</p>
+              </div>
+              {whatsappChannel && (
+                <a
+                  href={whatsappChannel}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Entrar no Canal do WhatsApp
+                </a>
+              )}
+              {config.show_whatsapp_button && config.whatsapp_url && (
+                <a
+                  href={config.whatsapp_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Entrar no Grupo do WhatsApp
+                </a>
+              )}
             </div>
-          )}
-
-          {config.show_whatsapp_button && config.whatsapp_url && (
-            <a
-              href={config.whatsapp_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all mt-3"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Entrar no Grupo do WhatsApp
-            </a>
-          )}
-
-          {whatsappChannel && (
-            <a
-              href={whatsappChannel}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all mt-3"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Entrar no Canal do WhatsApp
-            </a>
           )}
 
           <p className="text-[11px] text-muted-foreground mt-2">
