@@ -63,12 +63,12 @@ export function PromoBanner({ products }: PromoBannerProps) {
   return (
     <section className="relative">
       <div className="container max-w-7xl mx-auto px-4 py-4">
-        <div className="relative rounded-lg overflow-hidden h-[200px] md:h-[200px]">
+        <div className="relative rounded-lg overflow-hidden aspect-[16/9] md:aspect-auto md:h-[200px]">
           {/* Banner background */}
           <img
             src={promoBannerBg}
             alt="Promoções"
-            className="w-full h-full object-cover md:object-cover object-center absolute inset-0"
+            className="w-full h-full object-contain md:object-cover object-center absolute inset-0"
           />
 
           {/* Rotating products in center white area */}
