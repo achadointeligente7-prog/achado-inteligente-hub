@@ -12,6 +12,10 @@ interface PopupConfig {
   show_whatsapp_button: boolean;
 }
 
+interface SocialLinks {
+  whatsapp_channel?: string;
+}
+
 const defaultConfig: PopupConfig = {
   enabled: true,
   title: "🔥 Ofertas Exclusivas!",
