@@ -132,6 +132,18 @@ export function LeadCapturePopup() {
             </a>
           )}
 
+          {whatsappChannel && (
+            <a
+              href={whatsappChannel}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all mt-3"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Entrar no Canal do WhatsApp
+            </a>
+          )}
+
           <p className="text-[11px] text-muted-foreground mt-2">
             Não enviamos spam. Você pode sair a qualquer momento.
           </p>
