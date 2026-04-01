@@ -7,6 +7,7 @@ interface SocialLinks {
   tiktok: string;
   telegram: string;
   youtube: string;
+  whatsapp_channel: string;
 }
 
 const socialDefaults: SocialLinks = {
@@ -14,6 +15,7 @@ const socialDefaults: SocialLinks = {
   tiktok: "",
   telegram: "",
   youtube: "",
+  whatsapp_channel: "",
 };
 
 const socialLabels: { key: keyof SocialLinks; label: string }[] = [
@@ -90,6 +92,9 @@ export function Footer() {
               )}
               {links.telegram && (
                 <li><a href={links.telegram} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">✈️ Entre no Telegram</a></li>
+              )}
+              {links.whatsapp_channel && (
+                <li><a href={links.whatsapp_channel} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors">📲 Canal do WhatsApp</a></li>
               )}
             </ul>
           </div>

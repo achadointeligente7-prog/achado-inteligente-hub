@@ -21,6 +21,7 @@ interface SocialLinks {
   tiktok: string;
   telegram: string;
   youtube: string;
+  whatsapp_channel: string;
 }
 
 const defaultSocialLinks: SocialLinks = {
@@ -28,6 +29,7 @@ const defaultSocialLinks: SocialLinks = {
   tiktok: "",
   telegram: "",
   youtube: "",
+  whatsapp_channel: "",
 };
 
 interface Subscriber {
@@ -201,6 +203,14 @@ export function AdminSettings() {
             value={socialLinks.youtube}
             onChange={(e) => setSocialLinks({ ...socialLinks, youtube: e.target.value })}
             placeholder="https://youtube.com/@..."
+          />
+        </div>
+        <div>
+          <Label className="text-sm font-medium">Canal do WhatsApp</Label>
+          <Input
+            value={socialLinks.whatsapp_channel || ""}
+            onChange={(e) => setSocialLinks({ ...socialLinks, whatsapp_channel: e.target.value })}
+            placeholder="https://whatsapp.com/channel/..."
           />
         </div>
         <Button onClick={handleSaveSocial} disabled={savingSocial} className="w-full">

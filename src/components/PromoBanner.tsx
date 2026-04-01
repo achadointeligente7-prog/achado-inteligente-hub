@@ -63,17 +63,17 @@ export function PromoBanner({ products }: PromoBannerProps) {
   return (
     <section className="relative">
       <div className="container max-w-7xl mx-auto px-4 py-4">
-        <div className="relative rounded-lg overflow-hidden h-[160px] md:h-[200px]">
+        <div className="relative rounded-lg overflow-hidden h-[200px] md:h-[200px]">
           {/* Banner background */}
           <img
             src={promoBannerBg}
             alt="Promoções"
-            className="w-full h-full object-cover absolute inset-0"
+            className="w-full h-full object-cover md:object-cover object-center absolute inset-0"
           />
 
           {/* Rotating products in center white area */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-[45%] md:w-[50%] h-[65%] md:h-[70%] flex items-center justify-center">
+            <div className="w-[55%] md:w-[50%] h-[70%] md:h-[70%] flex items-center justify-center">
               {promoProducts.length > 0 && (
                 <Link
                   to={`/produto/${promoProducts[currentIndex]?.id}`}
@@ -82,13 +82,13 @@ export function PromoBanner({ products }: PromoBannerProps) {
                   <img
                     src={promoProducts[currentIndex]?.image}
                     alt={promoProducts[currentIndex]?.name}
-                    className="h-16 w-16 md:h-24 md:w-24 object-contain rounded"
+                    className="h-20 w-20 md:h-24 md:w-24 object-contain rounded"
                   />
-                  <div className="hidden md:block max-w-[200px]">
-                    <p className="text-xs text-foreground font-semibold line-clamp-2">
+                  <div className="max-w-[150px] md:max-w-[200px]">
+                    <p className="text-[10px] md:text-xs text-foreground font-semibold line-clamp-2">
                       {promoProducts[currentIndex]?.name}
                     </p>
-                    <p className="text-sm font-bold text-secondary mt-1">
+                    <p className="text-xs md:text-sm font-bold text-secondary mt-1">
                       {promoProducts[currentIndex]?.price}
                     </p>
                   </div>
