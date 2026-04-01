@@ -32,6 +32,7 @@ export function LeadCapturePopup() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [whatsappChannel, setWhatsappChannel] = useState("");
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem("popup_dismissed");
