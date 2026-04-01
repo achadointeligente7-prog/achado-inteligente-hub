@@ -205,6 +205,14 @@ export function AdminSettings() {
             placeholder="https://youtube.com/@..."
           />
         </div>
+        <div>
+          <Label className="text-sm font-medium">Canal do WhatsApp</Label>
+          <Input
+            value={socialLinks.whatsapp_channel || ""}
+            onChange={(e) => setSocialLinks({ ...socialLinks, whatsapp_channel: e.target.value })}
+            placeholder="https://whatsapp.com/channel/..."
+          />
+        </div>
         <Button onClick={handleSaveSocial} disabled={savingSocial} className="w-full">
           {savingSocial ? "Salvando..." : savedSocial ? "✅ Salvo!" : "Salvar Redes Sociais"}
         </Button>

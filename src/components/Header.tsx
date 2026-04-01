@@ -33,7 +33,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", tiktok: "", telegram: "", youtube: "" });
+  const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", tiktok: "", telegram: "", youtube: "", whatsapp_channel: "" });
 
   useEffect(() => {
     supabase
