@@ -40,16 +40,23 @@ export function LeadCapturePopup() {
 
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "popup_config")
-      .single()
+      .select("key, value")
+      .in("key", ["popup_config", "social_links"])
       .then(({ data }) => {
-        if (data?.value) {
-          const cfg = data.value as unknown as PopupConfig;
-          setConfig(cfg);
-          if (cfg.enabled) {
-            const timer = setTimeout(() => setShow(true), (cfg.delay_seconds || 5) * 1000);
-            return () => clearTimeout(timer);
+        if (data) {
+          const popup = data.find((d) => d.key === "popup_config");
+          if (popup?.value) {
+            const cfg = popup.value as unknown as PopupConfig;
+            setConfig(cfg);
+            if (cfg.enabled) {
+              const timer = setTimeout(() => setShow(true), (cfg.delay_seconds || 5) * 1000);
+              return () => clearTimeout(timer);
+            }
+          }
+          const social = data.find((d) => d.key === "social_links");
+          if (social?.value) {
+            const links = social.value as unknown as SocialLinks;
+            setWhatsappChannel(links.whatsapp_channel || "");
           }
         }
       });
