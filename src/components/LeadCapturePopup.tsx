@@ -12,6 +12,10 @@ interface PopupConfig {
   show_whatsapp_button: boolean;
 }
 
+interface SocialLinks {
+  whatsapp_channel?: string;
+}
+
 const defaultConfig: PopupConfig = {
   enabled: true,
   title: "🔥 Ofertas Exclusivas!",
@@ -28,6 +32,7 @@ export function LeadCapturePopup() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [whatsappChannel, setWhatsappChannel] = useState("");
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem("popup_dismissed");
@@ -35,16 +40,23 @@ export function LeadCapturePopup() {
 
     supabase
       .from("site_settings")
-      .select("value")
-      .eq("key", "popup_config")
-      .single()
+      .select("key, value")
+      .in("key", ["popup_config", "social_links"])
       .then(({ data }) => {
-        if (data?.value) {
-          const cfg = data.value as unknown as PopupConfig;
-          setConfig(cfg);
-          if (cfg.enabled) {
-            const timer = setTimeout(() => setShow(true), (cfg.delay_seconds || 5) * 1000);
-            return () => clearTimeout(timer);
+        if (data) {
+          const popup = data.find((d) => d.key === "popup_config");
+          if (popup?.value) {
+            const cfg = popup.value as unknown as PopupConfig;
+            setConfig(cfg);
+            if (cfg.enabled) {
+              const timer = setTimeout(() => setShow(true), (cfg.delay_seconds || 5) * 1000);
+              return () => clearTimeout(timer);
+            }
+          }
+          const social = data.find((d) => d.key === "social_links");
+          if (social?.value) {
+            const links = social.value as unknown as SocialLinks;
+            setWhatsappChannel(links.whatsapp_channel || "");
           }
         }
       });
@@ -117,6 +129,18 @@ export function LeadCapturePopup() {
             >
               <MessageCircle className="h-4 w-4" />
               Entrar no Grupo do WhatsApp
+            </a>
+          )}
+
+          {whatsappChannel && (
+            <a
+              href={whatsappChannel}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[hsl(142,70%,45%)] hover:bg-[hsl(142,70%,40%)] text-white font-bold rounded-sm text-sm transition-all mt-3"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Entrar no Canal do WhatsApp
             </a>
           )}
 
