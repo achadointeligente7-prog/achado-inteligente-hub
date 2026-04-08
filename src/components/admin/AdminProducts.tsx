@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pencil, Trash2, Plus, X, ImagePlus } from "lucide-react";
+import { BulkImportProducts } from "./BulkImportProducts";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
@@ -147,9 +148,12 @@ export function AdminProducts() {
     <>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display font-bold text-2xl text-foreground">Gerenciar Produtos</h1>
-        <Button onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyProduct); setExtraImages([]); }}>
-          <Plus className="h-4 w-4 mr-1" /> Novo Produto
-        </Button>
+        <div className="flex items-center gap-2">
+          <BulkImportProducts onComplete={fetchProducts} />
+          <Button onClick={() => { setShowForm(true); setEditingId(null); setForm(emptyProduct); setExtraImages([]); }}>
+            <Plus className="h-4 w-4 mr-1" /> Novo Produto
+          </Button>
+        </div>
       </div>
 
       {showForm && (
