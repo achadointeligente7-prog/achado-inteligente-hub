@@ -2,8 +2,9 @@ import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Upload, Download, X, CheckCircle, AlertCircle } from "lucide-react";
+import * as XLSX from "xlsx";
 
-const CSV_HEADERS = [
+const HEADERS = [
   "nome",
   "preco",
   "preco_original",
@@ -17,103 +18,41 @@ const CSV_HEADERS = [
   "link_afiliado",
 ];
 
-const TEMPLATE_ROW = [
-  "Produto Exemplo",
-  "R$ 49,90",
-  "R$ 99,90",
-  "Descrição do produto aqui",
-  "https://exemplo.com/imagem.jpg",
-  "https://img2.jpg|https://img3.jpg",
-  "eletronicos",
-  "viral",
-  "4.5",
-  "120",
-  "https://afiliado.com/link",
-];
+const TEMPLATE_ROW = {
+  nome: "Produto Exemplo",
+  preco: "R$ 49,90",
+  preco_original: "R$ 99,90",
+  descricao: "Descrição do produto aqui",
+  imagem_principal: "https://exemplo.com/imagem.jpg",
+  imagens_adicionais: "https://img2.jpg|https://img3.jpg",
+  categoria: "eletronicos",
+  tag: "viral",
+  avaliacao: 4.5,
+  num_reviews: 120,
+  link_afiliado: "https://afiliado.com/link",
+};
 
 function downloadTemplate() {
-  const bom = "\uFEFF";
-  const csv = bom + CSV_HEADERS.join(";") + "\n" + TEMPLATE_ROW.join(";") + "\n";
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "modelo_importacao_produtos.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet([TEMPLATE_ROW], { header: HEADERS });
 
-function parseCSVLine(line: string): string[] {
-  const fields: string[] = [];
-  let current = "";
-  let inQuotes = false;
+  // Set column widths
+  ws["!cols"] = [
+    { wch: 30 }, // nome
+    { wch: 14 }, // preco
+    { wch: 14 }, // preco_original
+    { wch: 40 }, // descricao
+    { wch: 40 }, // imagem_principal
+    { wch: 50 }, // imagens_adicionais
+    { wch: 15 }, // categoria
+    { wch: 10 }, // tag
+    { wch: 10 }, // avaliacao
+    { wch: 12 }, // num_reviews
+    { wch: 40 }, // link_afiliado
+  ];
 
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (i + 1 < line.length && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === ";") {
-        fields.push(current.trim());
-        current = "";
-      } else {
-        current += ch;
-      }
-    }
-  }
-  fields.push(current.trim());
-  return fields;
-}
-
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (i + 1 < text.length && text[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === "\n" || ch === "\r") {
-        if (ch === "\r" && i + 1 < text.length && text[i + 1] === "\n") {
-          i++;
-        }
-        if (current.trim()) {
-          rows.push(parseCSVLine(current));
-        }
-        current = "";
-      } else {
-        current += ch;
-      }
-    }
-  }
-  if (current.trim()) {
-    rows.push(parseCSVLine(current));
-  }
-  return rows;
+  XLSX.utils.book_append_sheet(wb, ws, "Produtos");
+  XLSX.writeFile(wb, "modelo_importacao_produtos.xlsx");
 }
 
 interface ImportResult {
@@ -138,85 +77,86 @@ export function BulkImportProducts({ onComplete }: Props) {
     setImporting(true);
     setResult(null);
 
-    const text = await file.text();
-    const rows = parseCSV(text);
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const wb = XLSX.read(arrayBuffer, { type: "array" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(ws, { defval: "" });
 
-    // Skip header row
-    const header = rows[0]?.map((h) => h.toLowerCase().replace(/\uFEFF/, ""));
-    const dataRows = rows.slice(1);
-
-    if (!header || header.length < 2) {
-      setResult({ success: 0, errors: ["Arquivo CSV inválido ou vazio."] });
-      setImporting(false);
-      return;
-    }
-
-    const errors: string[] = [];
-    let success = 0;
-
-    for (let i = 0; i < dataRows.length; i++) {
-      const row = dataRows[i];
-      const rowNum = i + 2;
-
-      const get = (col: string) => {
-        const idx = header.indexOf(col);
-        return idx >= 0 ? row[idx] || "" : "";
-      };
-
-      const nome = get("nome");
-      const preco = get("preco");
-      const linkAfiliado = get("link_afiliado");
-
-      if (!nome || !preco) {
-        errors.push(`Linha ${rowNum}: nome e preço são obrigatórios.`);
-        continue;
+      if (!rows.length) {
+        setResult({ success: 0, errors: ["Arquivo vazio ou inválido."] });
+        setImporting(false);
+        return;
       }
 
-      const productData = {
-        name: nome,
-        price: preco,
-        original_price: get("preco_original") || null,
-        description: get("descricao") || "",
-        image_url: get("imagem_principal") || "",
-        category: get("categoria") || "",
-        tag: get("tag") || null,
-        rating: parseFloat(get("avaliacao")) || 4.5,
-        reviews: parseInt(get("num_reviews").replace(/\./g, "")) || 0,
-        affiliate_url: linkAfiliado || "#",
-      };
+      const errors: string[] = [];
+      let success = 0;
 
-      const { data: inserted, error } = await supabase
-        .from("products")
-        .insert(productData)
-        .select("id")
-        .single();
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const rowNum = i + 2;
 
-      if (error) {
-        errors.push(`Linha ${rowNum}: ${error.message}`);
-        continue;
-      }
+        const get = (col: string) => String(row[col] ?? "").trim();
 
-      // Extra images
-      const extraImgs = get("imagens_adicionais");
-      if (extraImgs && inserted) {
-        const urls = extraImgs.split("|").map((u) => u.trim()).filter(Boolean);
-        if (urls.length > 0) {
-          await supabase.from("product_images").insert(
-            urls.map((url, idx) => ({
-              product_id: inserted.id,
-              image_url: url,
-              sort_order: idx,
-            }))
-          );
+        const nome = get("nome");
+        const preco = get("preco");
+        const linkAfiliado = get("link_afiliado");
+
+        if (!nome || !preco) {
+          errors.push(`Linha ${rowNum}: nome e preço são obrigatórios.`);
+          continue;
         }
+
+        const reviewsRaw = get("num_reviews").replace(/\./g, "").replace(/,/g, "");
+
+        const productData = {
+          name: nome,
+          price: preco,
+          original_price: get("preco_original") || null,
+          description: get("descricao") || "",
+          image_url: get("imagem_principal") || "",
+          category: get("categoria") || "",
+          tag: get("tag") || null,
+          rating: parseFloat(get("avaliacao")) || 4.5,
+          reviews: parseInt(reviewsRaw) || 0,
+          affiliate_url: linkAfiliado || "#",
+        };
+
+        const { data: inserted, error } = await supabase
+          .from("products")
+          .insert(productData)
+          .select("id")
+          .single();
+
+        if (error) {
+          errors.push(`Linha ${rowNum}: ${error.message}`);
+          continue;
+        }
+
+        const extraImgs = get("imagens_adicionais");
+        if (extraImgs && inserted) {
+          const urls = extraImgs.split("|").map((u) => u.trim()).filter(Boolean);
+          if (urls.length > 0) {
+            await supabase.from("product_images").insert(
+              urls.map((url, idx) => ({
+                product_id: inserted.id,
+                image_url: url,
+                sort_order: idx,
+              }))
+            );
+          }
+        }
+
+        success++;
       }
 
-      success++;
+      setResult({ success, errors });
+      if (success > 0) onComplete();
+    } catch (err) {
+      setResult({ success: 0, errors: ["Erro ao ler o arquivo. Verifique se é um arquivo .xlsx válido."] });
     }
 
-    setResult({ success, errors });
     setImporting(false);
-    if (success > 0) onComplete();
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -240,30 +180,30 @@ export function BulkImportProducts({ onComplete }: Props) {
 
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Faça o download da planilha modelo, preencha com seus produtos e envie o arquivo CSV.
-            Use <strong>;</strong> como separador. Para múltiplas imagens adicionais, separe com <strong>|</strong>.
+            Faça o download da planilha modelo (.xlsx), preencha com seus produtos e envie o arquivo.
+            Para múltiplas imagens adicionais, separe os links com <strong>|</strong>.
           </p>
 
           <Button variant="outline" className="w-full" onClick={downloadTemplate}>
-            <Download className="h-4 w-4 mr-1" /> Baixar Planilha Modelo
+            <Download className="h-4 w-4 mr-1" /> Baixar Planilha Modelo (.xlsx)
           </Button>
 
           <div className="border-2 border-dashed border-border rounded-lg p-4 text-center">
             <input
               ref={fileRef}
               type="file"
-              accept=".csv"
+              accept=".xlsx,.xls"
               onChange={handleFile}
               className="hidden"
-              id="csv-upload"
+              id="xlsx-upload"
             />
             <label
-              htmlFor="csv-upload"
+              htmlFor="xlsx-upload"
               className="cursor-pointer flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <Upload className="h-8 w-8" />
               <span className="text-sm font-medium">
-                {importing ? "Importando..." : "Clique para enviar o CSV"}
+                {importing ? "Importando..." : "Clique para enviar o arquivo .xlsx"}
               </span>
             </label>
           </div>
