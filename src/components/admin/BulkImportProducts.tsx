@@ -181,7 +181,7 @@ export function BulkImportProducts({ onComplete }: Props) {
         category: get("categoria") || "",
         tag: get("tag") || null,
         rating: parseFloat(get("avaliacao")) || 4.5,
-        reviews: parseInt(get("num_reviews")) || 0,
+        reviews: parseInt(get("num_reviews").replace(/\./g, "")) || 0,
         affiliate_url: linkAfiliado || "#",
       };
 
