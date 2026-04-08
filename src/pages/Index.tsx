@@ -30,7 +30,7 @@ const Index = () => {
       <Header />
       <main>
         <PromoBanner products={products} />
-        <HeroSection />
+        <HeroSection products={products} />
         <StatsBar />
         <CategoryGrid />
         {loading ? (
