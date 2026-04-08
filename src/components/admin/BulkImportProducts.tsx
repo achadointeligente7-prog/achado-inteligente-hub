@@ -77,8 +77,43 @@ function parseCSVLine(line: string): string[] {
 }
 
 function parseCSV(text: string): string[][] {
-  const lines = text.split(/\r?\n/).filter((l) => l.trim());
-  return lines.map((line) => parseCSVLine(line));
+  const rows: string[][] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < text.length && text[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === "\n" || ch === "\r") {
+        if (ch === "\r" && i + 1 < text.length && text[i + 1] === "\n") {
+          i++;
+        }
+        if (current.trim()) {
+          rows.push(parseCSVLine(current));
+        }
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+  }
+  if (current.trim()) {
+    rows.push(parseCSVLine(current));
+  }
+  return rows;
 }
 
 interface ImportResult {
