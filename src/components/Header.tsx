@@ -19,15 +19,7 @@ interface SocialLinks {
   whatsapp_channel: string;
 }
 
-const navLinks = [
-  { label: "Ofertas do dia", href: "#ofertas" },
-  { label: "Produtos Virais", href: "#virais" },
-  { label: "Gadgets Úteis", href: "#gadgets" },
-  { label: "Barato até R$50", href: "#barato" },
-  { label: "Casa", href: "#casa" },
-  { label: "Cozinha", href: "#cozinha" },
-  { label: "Tecnologia", href: "#tecnologia" },
-];
+// navLinks are now derived from categories
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
