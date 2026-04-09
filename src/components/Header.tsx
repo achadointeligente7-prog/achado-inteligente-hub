@@ -127,15 +127,15 @@ export function Header() {
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/categoria/${cat.slug}`}
                 className="block px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {link.label}
-              </a>
+                {cat.icon} {cat.name}
+              </Link>
             ))}
             <div className="border-t border-border pt-2 mt-2">
               <p className="text-xs text-muted-foreground px-3 mb-2 font-semibold uppercase">Categorias</p>
