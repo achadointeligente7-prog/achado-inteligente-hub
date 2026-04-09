@@ -19,15 +19,7 @@ interface SocialLinks {
   whatsapp_channel: string;
 }
 
-const navLinks = [
-  { label: "Ofertas do dia", href: "#ofertas" },
-  { label: "Produtos Virais", href: "#virais" },
-  { label: "Gadgets Úteis", href: "#gadgets" },
-  { label: "Barato até R$50", href: "#barato" },
-  { label: "Casa", href: "#casa" },
-  { label: "Cozinha", href: "#cozinha" },
-  { label: "Tecnologia", href: "#tecnologia" },
-];
+// navLinks are now derived from categories
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -89,14 +81,14 @@ export function Header() {
             >
               Categorias <ChevronDown className="h-3.5 w-3.5" />
             </button>
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/categoria/${cat.slug}`}
                 className="px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               >
-                {link.label}
-              </a>
+                {cat.name}
+              </Link>
             ))}
           </nav>
         </div>
@@ -135,15 +127,15 @@ export function Header() {
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/categoria/${cat.slug}`}
                 className="block px-3 py-2.5 text-sm text-foreground hover:bg-muted rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {link.label}
-              </a>
+                {cat.icon} {cat.name}
+              </Link>
             ))}
             <div className="border-t border-border pt-2 mt-2">
               <p className="text-xs text-muted-foreground px-3 mb-2 font-semibold uppercase">Categorias</p>
