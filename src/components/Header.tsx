@@ -81,14 +81,14 @@ export function Header() {
             >
               Categorias <ChevronDown className="h-3.5 w-3.5" />
             </button>
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/categoria/${cat.slug}`}
                 className="px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
               >
-                {link.label}
-              </a>
+                {cat.name}
+              </Link>
             ))}
           </nav>
         </div>
