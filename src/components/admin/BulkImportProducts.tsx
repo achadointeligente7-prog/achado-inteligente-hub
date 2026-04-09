@@ -1,58 +1,29 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Upload, Download, X, CheckCircle, AlertCircle } from "lucide-react";
 import * as XLSX from "xlsx";
 
+const VALID_TAGS = ["viral", "oferta", "novo", "top"] as const;
+
 const HEADERS = [
-  "nome",
-  "preco",
-  "preco_original",
-  "descricao",
-  "imagem_principal",
-  "imagens_adicionais",
-  "categoria",
-  "tag",
-  "avaliacao",
-  "num_reviews",
-  "link_afiliado",
+  "nome", "preco", "preco_original", "descricao", "imagem_principal",
+  "imagens_adicionais", "categoria", "tag", "avaliacao", "num_reviews", "link_afiliado",
 ];
 
-const TEMPLATE_ROW = {
-  nome: "Produto Exemplo",
-  preco: "R$ 49,90",
-  preco_original: "R$ 99,90",
-  descricao: "Descrição do produto aqui",
-  imagem_principal: "https://exemplo.com/imagem.jpg",
-  imagens_adicionais: "https://img2.jpg|https://img3.jpg",
-  categoria: "eletronicos",
-  tag: "viral",
-  avaliacao: 4.5,
-  num_reviews: 120,
-  link_afiliado: "https://afiliado.com/link",
+const TAG_NORMALIZE: Record<string, string> = {
+  virais: "viral", viral: "viral",
+  ofertas: "oferta", oferta: "oferta", "ofertas do dia": "oferta",
+  novo: "novo", novidade: "novo", novidades: "novo", lançamento: "novo", lancamento: "novo",
+  top: "top", "mais vendido": "top", "mais vendidos": "top",
 };
 
-function downloadTemplate() {
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet([TEMPLATE_ROW], { header: HEADERS });
-
-  // Set column widths
-  ws["!cols"] = [
-    { wch: 30 }, // nome
-    { wch: 14 }, // preco
-    { wch: 14 }, // preco_original
-    { wch: 40 }, // descricao
-    { wch: 40 }, // imagem_principal
-    { wch: 50 }, // imagens_adicionais
-    { wch: 15 }, // categoria
-    { wch: 10 }, // tag
-    { wch: 10 }, // avaliacao
-    { wch: 12 }, // num_reviews
-    { wch: 40 }, // link_afiliado
-  ];
-
-  XLSX.utils.book_append_sheet(wb, ws, "Produtos");
-  XLSX.writeFile(wb, "modelo_importacao_produtos.xlsx");
+function normalizeTag(raw: string): string | null {
+  if (!raw) return null;
+  const key = raw.toLowerCase().trim();
+  if (TAG_NORMALIZE[key]) return TAG_NORMALIZE[key];
+  if ((VALID_TAGS as readonly string[]).includes(key)) return key;
+  return null;
 }
 
 interface ImportResult {
@@ -68,7 +39,62 @@ export function BulkImportProducts({ onComplete }: Props) {
   const [open, setOpen] = useState(false);
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    supabase.from("categories").select("slug").order("sort_order").then(({ data }) => {
+      if (data) setCategories(data.map((c) => c.slug));
+    });
+  }, []);
+
+  const downloadTemplate = () => {
+    const wb = XLSX.utils.book_new();
+
+    const templateRow = {
+      nome: "Produto Exemplo",
+      preco: "R$ 49,90",
+      preco_original: "R$ 99,90",
+      descricao: "Descrição do produto aqui",
+      imagem_principal: "https://exemplo.com/imagem.jpg",
+      imagens_adicionais: "https://img2.jpg|https://img3.jpg",
+      categoria: categories[0] || "",
+      tag: "viral",
+      avaliacao: 4.5,
+      num_reviews: 120,
+      link_afiliado: "https://afiliado.com/link",
+    };
+
+    const ws = XLSX.utils.json_to_sheet([templateRow], { header: HEADERS });
+    ws["!cols"] = [
+      { wch: 30 }, { wch: 14 }, { wch: 14 }, { wch: 40 }, { wch: 40 },
+      { wch: 50 }, { wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 12 }, { wch: 40 },
+    ];
+
+    // Add validation reference sheet
+    const refData: (string | null)[][] = [];
+    const maxLen = Math.max(categories.length, VALID_TAGS.length);
+    refData.push(["Categorias Válidas", "Tags Válidas"]);
+    for (let i = 0; i < maxLen; i++) {
+      refData.push([categories[i] || null, VALID_TAGS[i] || null]);
+    }
+    const wsRef = XLSX.utils.aoa_to_sheet(refData);
+    wsRef["!cols"] = [{ wch: 20 }, { wch: 15 }];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Produtos");
+    XLSX.utils.book_append_sheet(wb, wsRef, "Valores Válidos");
+    XLSX.writeFile(wb, "modelo_importacao_produtos.xlsx");
+  };
+
+  const normalizeCategorySlug = (raw: string): string => {
+    const lower = raw.toLowerCase().trim();
+    const found = categories.find((c) => c === lower);
+    if (found) return found;
+    const partial = categories.find((c) =>
+      lower.includes(c) || c.includes(lower)
+    );
+    return partial || lower;
+  };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,19 +121,25 @@ export function BulkImportProducts({ onComplete }: Props) {
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const rowNum = i + 2;
-
         const get = (col: string) => String(row[col] ?? "").trim();
 
         const nome = get("nome");
         const preco = get("preco");
-        const linkAfiliado = get("link_afiliado");
 
         if (!nome || !preco) {
           errors.push(`Linha ${rowNum}: nome e preço são obrigatórios.`);
           continue;
         }
 
+        const rawTag = get("tag");
+        const normalizedTag = normalizeTag(rawTag);
+        if (rawTag && !normalizedTag) {
+          errors.push(`Linha ${rowNum}: Tag "${rawTag}" inválida. Use: ${VALID_TAGS.join(", ")}`);
+          continue;
+        }
+
         const reviewsRaw = get("num_reviews").replace(/\./g, "").replace(/,/g, "");
+        const category = normalizeCategorySlug(get("categoria"));
 
         const productData = {
           name: nome,
@@ -115,11 +147,11 @@ export function BulkImportProducts({ onComplete }: Props) {
           original_price: get("preco_original") || null,
           description: get("descricao") || "",
           image_url: get("imagem_principal") || "",
-          category: get("categoria") || "",
-          tag: get("tag") || null,
+          category,
+          tag: normalizedTag,
           rating: parseFloat(get("avaliacao")) || 4.5,
           reviews: parseInt(reviewsRaw) || 0,
-          affiliate_url: linkAfiliado || "#",
+          affiliate_url: get("link_afiliado") || "#",
         };
 
         const { data: inserted, error } = await supabase
@@ -152,7 +184,7 @@ export function BulkImportProducts({ onComplete }: Props) {
 
       setResult({ success, errors });
       if (success > 0) onComplete();
-    } catch (err) {
+    } catch {
       setResult({ success: 0, errors: ["Erro ao ler o arquivo. Verifique se é um arquivo .xlsx válido."] });
     }
 
@@ -180,9 +212,15 @@ export function BulkImportProducts({ onComplete }: Props) {
 
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Faça o download da planilha modelo (.xlsx), preencha com seus produtos e envie o arquivo.
-            Para múltiplas imagens adicionais, separe os links com <strong>|</strong>.
+            Baixe a planilha modelo, preencha e envie. A aba <strong>"Valores Válidos"</strong> lista
+            as categorias e tags aceitas pelo sistema.
           </p>
+
+          <div className="bg-muted/50 rounded-md p-3 text-xs text-muted-foreground space-y-1">
+            <p><strong>Tags válidas:</strong> {VALID_TAGS.join(", ")}</p>
+            <p><strong>Categorias:</strong> {categories.join(", ") || "carregando..."}</p>
+            <p><strong>Imagens adicionais:</strong> separe URLs com <strong>|</strong></p>
+          </div>
 
           <Button variant="outline" className="w-full" onClick={downloadTemplate}>
             <Download className="h-4 w-4 mr-1" /> Baixar Planilha Modelo (.xlsx)
