@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -32,6 +32,7 @@ function dbToProduct(p: any): Product {
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,12 +75,12 @@ export default function CategoryPage() {
       <Header />
       <main className="py-6">
         <div className="container max-w-7xl mx-auto px-4">
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate(-1)}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <ChevronLeft className="h-4 w-4" /> Voltar
-          </Link>
+          </button>
 
           <div className="bg-card rounded-md shadow-card p-5 mb-6">
             <h1 className="font-display font-bold text-2xl text-foreground flex items-center gap-2">
