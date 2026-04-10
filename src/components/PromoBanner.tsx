@@ -63,6 +63,7 @@ export function PromoBanner({ products }: PromoBannerProps) {
   return (
     <section className="relative">
       <div className="container max-w-7xl mx-auto px-4 py-4 space-y-3">
+        <div className="relative rounded-lg overflow-hidden aspect-[16/9] md:aspect-auto md:h-[200px]">
           {/* Banner background */}
           <img
             src={promoBannerBg}
@@ -95,6 +96,18 @@ export function PromoBanner({ products }: PromoBannerProps) {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Animated video banner */}
+        <div className="rounded-lg overflow-hidden">
+          <video
+            src="/videos/promo-animated.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto rounded-lg"
+          />
         </div>
 
         {/* Search bar overlapping bottom of banner */}
