@@ -51,7 +51,7 @@ export function Header() {
       <div className="bg-primary">
         <div className="container max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-4">
           <a href="/" className="flex items-center gap-2 shrink-0">
-            <img src={logo} alt="Achado Inteligente" className="h-14 md:h-16" />
+            <img src={logo} alt="Achado Inteligente" className="h-20 md:h-24" />
           </a>
 
           <div className="flex-1 hidden md:block" />
