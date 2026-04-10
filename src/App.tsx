@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import CategoryPage from "./pages/CategoryPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import SobreNos from "./pages/SobreNos.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/categoria/:slug" element={<CategoryPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/sobre" element={<SobreNos />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
