@@ -72,7 +72,7 @@ export function PromoBanner({ products }: PromoBannerProps) {
           />
 
           {/* Rotating products in center white area */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center px-0 py-0">
             <div className="w-[55%] md:w-[50%] h-[70%] md:h-[70%] flex items-center justify-center">
               {promoProducts.length > 0 && (
                 <Link
@@ -106,7 +106,7 @@ export function PromoBanner({ products }: PromoBannerProps) {
             loop
             muted
             playsInline
-            className="w-full h-auto rounded-lg"
+            className="w-full h-auto rounded-lg my-0 py-0"
           />
         </div>
 
