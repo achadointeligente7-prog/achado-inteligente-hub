@@ -49,7 +49,7 @@ export function Header() {
     <header className="sticky top-0 z-50">
       {/* Top yellow bar */}
       <div className="bg-primary">
-        <div className="container max-w-7xl mx-auto py-2.5 flex items-center gap-4 px-0">
+        <div className="container max-w-7xl mx-auto py-1 flex items-center gap-4 px-4">
           <a href="/" className="flex items-center gap-2 shrink-0">
             <img src={logo} alt="Achado Inteligente" className="h-20 md:h-24 my-0" />
           </a>
@@ -66,7 +66,7 @@ export function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 rounded-md text-primary-foreground"
           >
-            {isMenuOpen ? <X className="h-5 w-5 px-0 py-0 mx-[500px]" /> : <Menu className="h-5 w-5 px-0 py-0 mx-[500px]" />}
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
