@@ -62,8 +62,7 @@ export function PromoBanner({ products }: PromoBannerProps) {
 
   return (
     <section className="relative">
-      <div className="container max-w-7xl mx-auto px-4 py-4">
-        <div className="relative rounded-lg overflow-hidden aspect-[16/9] md:aspect-auto md:h-[200px]">
+      <div className="container max-w-7xl mx-auto px-4 py-4 space-y-3">
           {/* Banner background */}
           <img
             src={promoBannerBg}
