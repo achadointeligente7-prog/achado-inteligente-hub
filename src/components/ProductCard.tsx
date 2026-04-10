@@ -77,7 +77,7 @@ export function ProductCard({ product }: { product: Product }) {
               {discount}% OFF
             </span>
           )}
-          <div className="aspect-square overflow-hidden bg-card p-4">
+          <div className="aspect-square overflow-hidden bg-card p-4 md:p-2">
             <img
               src={product.image}
               alt={product.name}
