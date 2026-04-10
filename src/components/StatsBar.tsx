@@ -26,10 +26,10 @@ export function StatsBar() {
 
   return (
     <section className="bg-card border-b border-border">
-      <div className="container max-w-7xl mx-auto px-4 py-4 shadow-sm">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="container max-w-7xl mx-auto px-4 py-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {stats.map((stat) => (
-            <div key={stat.label} className="flex-row flex items-start justify-start gap-[10px] rounded-full shadow-2xl">
+            <div key={stat.label} className="flex items-center gap-2">
               <span className="text-2xl">{stat.icon}</span>
               <div>
                 <p className="font-display font-semibold text-sm text-foreground">{stat.label}</p>
