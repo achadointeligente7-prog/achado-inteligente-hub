@@ -82,7 +82,7 @@ export function PromoBanner({ products }: PromoBannerProps) {
                   <img
                     src={promoProducts[currentIndex]?.image}
                     alt={promoProducts[currentIndex]?.name}
-                    className="h-20 w-20 md:h-24 md:w-24 object-contain rounded"
+                    className="h-28 w-28 md:h-32 md:w-32 object-contain rounded"
                   />
                   <div className="max-w-[150px] md:max-w-[200px]">
                     <p className="text-[10px] md:text-xs text-foreground font-semibold line-clamp-2">
