@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -8,6 +8,24 @@ import { ProductReviews } from "@/components/ProductReviews";
 import { Star, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import type { Product } from "@/hooks/useProducts";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
+
+function DescriptionBlock({ description }: { description: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="bg-card rounded-md p-5 shadow-card space-y-3 mt-6">
+      <h2 className="font-display font-semibold text-lg text-foreground">Descrição</h2>
+      <p className={`text-sm text-muted-foreground leading-relaxed whitespace-pre-line ${!expanded ? "line-clamp-4" : ""}`}>
+        {description}
+      </p>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-sm text-secondary font-medium hover:underline"
+      >
+        {expanded ? "Ver menos" : "Ver mais"}
+      </button>
+    </div>
+  );
+}
 
 interface ProductImage {
   id: string;
@@ -241,12 +259,7 @@ export default function ProductDetail() {
               🛒 Ver produto
             </a>
 
-            <div className="bg-card rounded-md p-5 shadow-card space-y-3 mt-6">
-              <h2 className="font-display font-semibold text-lg text-foreground">Descrição</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
-            </div>
+            <DescriptionBlock description={product.description} />
 
             <div className="grid grid-cols-3 gap-3 mt-4">
               {[
