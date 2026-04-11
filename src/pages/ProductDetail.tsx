@@ -237,7 +237,7 @@ export default function ProductDetail() {
               onClick={handleClick}
               className="cta-button block w-full text-center font-bold py-4 rounded-sm text-lg mt-4"
             >
-              🛒 Compre agora
+              🛒 Ver produto
             </a>
 
             <div className="bg-card rounded-md p-5 shadow-card space-y-3 mt-6">
