@@ -241,12 +241,7 @@ export default function ProductDetail() {
               🛒 Ver produto
             </a>
 
-            <div className="bg-card rounded-md p-5 shadow-card space-y-3 mt-6">
-              <h2 className="font-display font-semibold text-lg text-foreground">Descrição</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
-            </div>
+            <DescriptionBlock description={product.description} />
 
             <div className="grid grid-cols-3 gap-3 mt-4">
               {[
