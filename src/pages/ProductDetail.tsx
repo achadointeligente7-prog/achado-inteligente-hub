@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductReviews } from "@/components/ProductReviews";
 import { Star, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import type { Product } from "@/hooks/useProducts";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
