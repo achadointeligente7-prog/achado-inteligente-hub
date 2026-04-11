@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductReviews } from "@/components/ProductReviews";
 import { Star, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import type { Product } from "@/hooks/useProducts";
 import { useTrackVisit } from "@/hooks/useTrackVisit";
@@ -261,6 +262,11 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <section className="mt-8">
+          <ProductReviews productId={product.id} />
+        </section>
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
