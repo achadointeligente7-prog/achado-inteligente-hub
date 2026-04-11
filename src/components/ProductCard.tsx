@@ -122,7 +122,7 @@ export function ProductCard({ product }: { product: Product }) {
           onTouchStart={() => setIsPressed(true)}
           onTouchEnd={() => setTimeout(() => setIsPressed(false), 150)}
         >
-          🛒 Compre agora
+          🛒 Ver produto
         </a>
       </div>
     </div>
