@@ -263,6 +263,11 @@ export default function ProductDetail() {
           </div>
         </div>
 
+        {/* Reviews Section */}
+        <section className="mt-8">
+          <ProductReviews productId={product.id} />
+        </section>
+
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <section className="mt-12">
