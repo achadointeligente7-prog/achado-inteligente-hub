@@ -108,11 +108,8 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </Link>
       <div className="px-3 pb-3">
-        <a
-          href={product.affiliateUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleClick}
+        <Link
+          to={`/produto/${product.id}`}
           className={`cta-button block w-full text-center font-semibold py-2.5 rounded-sm text-sm transition-all duration-200 ${
             isPressed ? "scale-95" : ""
           }`}
@@ -123,7 +120,7 @@ export function ProductCard({ product }: { product: Product }) {
           onTouchEnd={() => setTimeout(() => setIsPressed(false), 150)}
         >
           🛒 Ver produto
-        </a>
+        </Link>
       </div>
     </div>
   );
