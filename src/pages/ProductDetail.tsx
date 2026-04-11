@@ -256,7 +256,7 @@ export default function ProductDetail() {
               onClick={handleClick}
               className="cta-button block w-full text-center font-bold py-4 rounded-sm text-lg mt-4"
             >
-              🛒 Ver produto
+              🛒 Compre agora
             </a>
 
             <DescriptionBlock description={product.description} />
