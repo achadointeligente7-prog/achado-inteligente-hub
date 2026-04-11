@@ -259,23 +259,7 @@ export default function ProductDetail() {
               🛒 Ver produto
             </a>
 
-            {(() => {
-              const [expanded, setExpanded] = useState(false);
-              return (
-                <div className="bg-card rounded-md p-5 shadow-card space-y-3 mt-6">
-                  <h2 className="font-display font-semibold text-lg text-foreground">Descrição</h2>
-                  <p className={`text-sm text-muted-foreground leading-relaxed whitespace-pre-line ${!expanded ? "line-clamp-4" : ""}`}>
-                    {product.description}
-                  </p>
-                  <button
-                    onClick={() => setExpanded(!expanded)}
-                    className="text-sm text-secondary font-medium hover:underline"
-                  >
-                    {expanded ? "Ver menos" : "Ver mais"}
-                  </button>
-                </div>
-              );
-            })()}
+            <DescriptionBlock description={product.description} />
 
             <div className="grid grid-cols-3 gap-3 mt-4">
               {[
