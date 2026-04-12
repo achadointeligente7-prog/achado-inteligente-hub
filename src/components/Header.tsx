@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Menu, X, Search, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import type { Product } from "@/hooks/useProducts";
 
 interface Category {
   id: string;
@@ -19,13 +20,19 @@ interface SocialLinks {
   whatsapp_channel: string;
 }
 
-// navLinks are now derived from categories
+interface HeaderProps {
+  products?: Product[];
+}
 
-export function Header() {
+export function Header({ products = [] }: HeaderProps) {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", tiktok: "", telegram: "", youtube: "", whatsapp_channel: "" });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     supabase
@@ -45,6 +52,81 @@ export function Header() {
       });
   }, []);
 
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      if (query.trim().length < 2) {
+        setSearchResults([]);
+        setShowResults(false);
+        return;
+      }
+      const q = query.toLowerCase();
+      const results = products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q)
+      );
+      setSearchResults(results.slice(0, 6));
+      setShowResults(true);
+    },
+    [products]
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchResults.length > 0) {
+      navigate(`/produto/${searchResults[0].id}`);
+      setShowResults(false);
+      setSearchQuery("");
+    }
+  };
+
+  const searchBar = (
+    <form onSubmit={handleSubmit} className="relative w-full">
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => handleSearch(e.target.value)}
+        onBlur={() => setTimeout(() => setShowResults(false), 200)}
+        onFocus={() => searchQuery.trim().length >= 2 && setShowResults(true)}
+        placeholder="Buscar produtos, marcas e muito mais..."
+        className="w-full pl-4 pr-12 py-2.5 rounded-lg bg-card text-foreground text-sm shadow-hero focus:outline-none focus:ring-2 focus:ring-ring border border-border"
+      />
+      <button
+        type="submit"
+        className="absolute right-0 top-0 h-full px-4 bg-primary hover:bg-primary/90 transition-colors rounded-r-lg"
+      >
+        <Search className="h-4 w-4 text-primary-foreground" />
+      </button>
+      {showResults && searchResults.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-[300px] overflow-y-auto">
+          {searchResults.map((product) => (
+            <Link
+              key={product.id}
+              to={`/produto/${product.id}`}
+              className="flex items-center gap-3 p-3 hover:bg-muted transition-colors"
+              onClick={() => {
+                setShowResults(false);
+                setSearchQuery("");
+              }}
+            >
+              <img
+                src={product.image}
+                alt={product.name}
+                className="h-10 w-10 object-contain rounded"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-foreground line-clamp-1">{product.name}</p>
+                <p className="text-xs font-bold text-secondary">{product.price}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </form>
+  );
+
   return (
     <header className="sticky top-0 z-50">
       {/* Top yellow bar */}
@@ -54,15 +136,8 @@ export function Header() {
             <img src={logo} alt="Achado Inteligente" className="h-20 md:h-24 my-0" />
           </a>
 
-          <div className="flex-1 hidden md:flex items-center justify-center max-w-md mx-4">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Buscar produtos..."
-                className="w-full pl-4 pr-10 py-2 rounded-full bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 text-sm border border-primary-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary-foreground/60" />
-            </div>
+          <div className="flex-1 hidden md:flex items-center justify-center max-w-xl mx-4">
+            {searchBar}
           </div>
 
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
@@ -128,13 +203,8 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden bg-card border-b border-border max-h-[70vh] overflow-y-auto">
           <div className="p-4 space-y-1">
-            <div className="relative mb-3">
-              <input
-                type="text"
-                placeholder="Buscar produtos..."
-                className="w-full pl-4 pr-10 py-2.5 rounded-sm bg-muted text-sm"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="mb-3">
+              {searchBar}
             </div>
             {categories.map((cat) => (
               <Link
