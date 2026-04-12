@@ -3,6 +3,7 @@ import { Menu, X, Search, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/integrations/supabase/client";
+import { useProducts } from "@/hooks/useProducts";
 import type { Product } from "@/hooks/useProducts";
 
 interface Category {
@@ -24,7 +25,9 @@ interface HeaderProps {
   products?: Product[];
 }
 
-export function Header({ products = [] }: HeaderProps) {
+export function Header({ products: externalProducts }: HeaderProps = {}) {
+  const { products: fetchedProducts } = useProducts();
+  const products = externalProducts && externalProducts.length > 0 ? externalProducts : fetchedProducts;
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
