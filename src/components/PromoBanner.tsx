@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import promoBannerBg from "@/assets/promo-banner.png";
+import promoBannerMobile from "@/assets/promo-banner-mobile.png";
 import type { Product } from "@/hooks/useProducts";
 
 interface PromoBannerProps {
@@ -26,10 +27,17 @@ export function PromoBanner({ products }: PromoBannerProps) {
     <section className="relative">
       <div className="container max-w-7xl mx-auto px-4 py-1 md:py-2 space-y-1 md:space-y-2">
         <div className="relative rounded-lg overflow-hidden aspect-[21/9] md:aspect-auto md:h-[200px]">
+          {/* Mobile banner */}
+          <img
+            src={promoBannerMobile}
+            alt="Promoções"
+            className="w-full h-full object-contain object-center absolute inset-0 md:hidden"
+          />
+          {/* Desktop banner */}
           <img
             src={promoBannerBg}
             alt="Promoções"
-            className="w-full h-full object-contain md:object-cover object-center absolute inset-0"
+            className="w-full h-full object-cover object-center absolute inset-0 hidden md:block"
           />
           <div className="absolute inset-0 flex items-center justify-center px-0 py-0">
             <div className="w-[55%] md:w-[50%] h-[70%] md:h-[70%] flex items-center justify-center">
