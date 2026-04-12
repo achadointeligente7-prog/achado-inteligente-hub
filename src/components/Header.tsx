@@ -54,7 +54,16 @@ export function Header() {
             <img src={logo} alt="Achado Inteligente" className="h-20 md:h-24 my-0" />
           </a>
 
-          <div className="flex-1 hidden md:block" />
+          <div className="flex-1 hidden md:flex items-center justify-center max-w-md mx-4">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Buscar produtos..."
+                className="w-full pl-4 pr-10 py-2 rounded-full bg-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 text-sm border border-primary-foreground/30 focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary-foreground/60" />
+            </div>
+          </div>
 
           <div className="hidden md:flex items-center gap-5 text-primary-foreground text-sm shrink-0">
             <a href={socialLinks.instagram || "#"} target={socialLinks.instagram ? "_blank" : undefined} rel={socialLinks.instagram ? "noopener noreferrer" : undefined} className="hover:underline">Instagram</a>
