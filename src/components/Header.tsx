@@ -151,7 +151,7 @@ export function Header({ products: externalProducts }: HeaderProps = {}) {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-md text-primary-foreground"
+            className="md:hidden p-2 rounded-md text-primary-foreground ml-auto -mr-2"
           >
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
