@@ -156,6 +156,11 @@ export function Header({ products: externalProducts }: HeaderProps = {}) {
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
+
+        {/* Mobile search bar - always visible */}
+        <div className="md:hidden px-4 pb-2">
+          {searchBar}
+        </div>
       </div>
 
       {/* Navigation bar */}
